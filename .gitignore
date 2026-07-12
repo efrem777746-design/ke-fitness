@@ -1,0 +1,13 @@
+# Dependencies and build output
+node_modules/
+.next/
+
+# Local tool caches
+.appdata/
+AppData/
+.localappdata/
+
+# Environment and editor files
+.env*
+!.env.example
+.DS_Store
