@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowDownRight, ArrowUpRight, Check, ChevronDown, Dumbbell, MessageCircle, Play, Salad, ScanLine, Sparkles, TrendingUp } from "lucide-react";
-import { useState } from "react";
+import { ArrowDownRight, ArrowUpRight, Check, ChevronDown, Dumbbell, MessageCircle, Play, Salad, ScanLine, Sparkles, TrendingUp, X } from "lucide-react";
+import { useState, type FormEvent } from "react";
 import type { LucideIcon } from "lucide-react";
 
 const images = { hero: "/images/hero.png", about: "/images/about.png", contact: "/images/contact.png" };
@@ -23,8 +23,44 @@ const plans = [
 const faqs = [["Можно ли заниматься дома?","Да. Программа учитывает ваше оборудование: от тренировок с собственным весом до полноценного зала."],["Подходит ли сопровождение новичкам?","Да. Нагрузка и объяснения подстраиваются под ваш текущий опыт, поэтому начинать можно без подготовки."],["Нужно ли считать калории?","Не всегда. Мы выбираем формат, который помогает стабильно двигаться к цели и не перегружает повседневную жизнь."],["Как происходит общение?","Основная связь — в мессенджере. Вы отправляете отчёты и вопросы, а я даю обратную связь в согласованном формате."],["Как быстро я получу программу?","После консультации, анкеты, фото и замеров подготовка программы обычно занимает несколько рабочих дней."]];
 const rise = { hidden:{opacity:0,y:22}, show:{opacity:1,y:0} };
 
+function ApplicationForm({ plan, onClose }: { plan: string; onClose: () => void }) {
+ const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+ const [error, setError] = useState("");
+
+ async function submitApplication(event: FormEvent<HTMLFormElement>) {
+  event.preventDefault();
+  setStatus("sending");
+  setError("");
+  const form = new FormData(event.currentTarget);
+  const response = await fetch("/api/lead", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.fromEntries(form.entries())) });
+  if (response.ok) { setStatus("success"); return; }
+  const result = await response.json().catch(() => null);
+  setError(result?.error ?? "Не удалось отправить заявку. Попробуйте ещё раз.");
+  setStatus("error");
+ }
+
+ return <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 px-5 py-6" role="dialog" aria-modal="true" aria-label="Заявка на сопровождение">
+  <div className="relative w-full max-w-md bg-white p-7 text-[#171717] shadow-2xl sm:p-9">
+   <button type="button" onClick={onClose} className="absolute right-5 top-5 p-1 text-neutral-500 transition-colors hover:text-black" aria-label="Закрыть форму"><X size={20}/></button>
+   {status === "success" ? <div className="py-10 pr-8"><p className="eyebrow">Заявка отправлена</p><p className="mt-5 text-2xl font-medium leading-8 tracking-[-.04em]">Спасибо! Я свяжусь с вами в течение 24 часов.</p><button type="button" onClick={onClose} className="btn btn-dark mt-9">Закрыть</button></div> : <>
+    <p className="eyebrow">Заявка · {plan}</p><h2 className="mt-4 text-3xl font-medium tracking-[-.05em]">Начать сопровождение</h2><p className="mt-3 text-sm leading-6 text-neutral-500">Оставьте контакты — я уточню детали и предложу следующий шаг.</p>
+    <form onSubmit={submitApplication} className="mt-8 space-y-5">
+     <label className="block text-sm font-medium">Имя<input required name="name" autoComplete="name" className="mt-2 w-full border-b border-neutral-300 bg-transparent px-0 py-3 outline-none transition-colors focus:border-black" /></label>
+     <label className="block text-sm font-medium">E-mail<input required name="email" type="email" autoComplete="email" className="mt-2 w-full border-b border-neutral-300 bg-transparent px-0 py-3 outline-none transition-colors focus:border-black" /></label>
+     <label className="block text-sm font-medium">Telegram или WhatsApp<input required name="messenger" autoComplete="tel" className="mt-2 w-full border-b border-neutral-300 bg-transparent px-0 py-3 outline-none transition-colors focus:border-black" /></label>
+     <label className="block text-sm font-medium">Цель <span className="font-normal text-neutral-400">(необязательно)</span><textarea name="goal" rows={3} className="mt-2 w-full resize-none border-b border-neutral-300 bg-transparent px-0 py-3 outline-none transition-colors focus:border-black" /></label>
+     <input type="hidden" name="plan" value={plan}/>
+     {status === "error" && <p role="alert" className="text-sm text-red-700">{error}</p>}
+     <button disabled={status === "sending"} className="btn btn-dark w-full disabled:cursor-wait disabled:opacity-60">{status === "sending" ? "Отправляем…" : "Отправить заявку"}</button>
+    </form>
+   </>}
+  </div>
+ </div>;
+}
+
 export default function Home() {
  const [open,setOpen]=useState<number|null>(0);
+ const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
  return <main>
   <section className="relative min-h-screen overflow-hidden bg-neutral-900 text-white">
    <Image src={images.hero} alt="Константин Ефремов в тренировочном зале" fill priority sizes="100vw" className="object-cover object-[52%_58%] opacity-80 sm:object-[52%_52%]" />
@@ -47,10 +83,11 @@ export default function Home() {
 
   <section className="shell py-28 sm:py-40"><div className="max-w-3xl"><p className="eyebrow">Процесс</p><h2 className="display mt-5 text-5xl font-semibold sm:text-7xl">Чёткий путь<br/>без лишнего.</h2></div><div className="mt-20 border-t border-neutral-200">{["Консультация","Анкета","Фото и замеры","Индивидуальная программа","Еженедельный контроль","Достижение результата"].map((step,i)=><motion.div initial={{opacity:0,x:-16}} whileInView={{opacity:1,x:0}} viewport={{once:true}} transition={{delay:i*.05}} className="group flex items-center justify-between border-b border-neutral-200 py-6 sm:py-8" key={step}><span className="w-14 text-xs text-neutral-400">0{i+1}</span><h3 className="mr-auto text-xl tracking-[-.03em] sm:text-3xl">{step}</h3><ArrowDownRight className="h-5 w-5 transition-transform group-hover:translate-x-1 group-hover:translate-y-1" strokeWidth={1.3}/></motion.div>)}</div></section>
 
-  <section id="plans" className="bg-[#171717] py-28 text-white sm:py-40"><div className="shell"><div className="flex flex-col justify-between gap-7 sm:flex-row"><div><p className="eyebrow text-white/50">Тарифы</p><h2 className="display mt-5 text-5xl font-semibold sm:text-7xl">Выберите формат<br/>работы.</h2></div><p className="max-w-xs self-end text-sm leading-6 text-white/55">Все тарифы включают персональный подход. Можно начать с формата, который комфортен сейчас.</p></div><div className="mt-16 grid gap-4 lg:grid-cols-3">{plans.map(plan=><article key={plan.name} className={`relative flex min-h-[500px] flex-col rounded-2xl border p-7 sm:p-9 ${plan.featured?"border-white bg-white text-[#171717]":"border-white/15 bg-white/[.045]"}`}>{plan.featured&&<span className="absolute right-6 top-6 rounded-full bg-[#171717] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">Самый популярный</span>}<h3 className="text-xl">{plan.name}</h3><p className={`mt-3 text-sm leading-6 ${plan.featured?"text-neutral-500":"text-white/50"}`}>{plan.intro}</p><p className="mt-10 text-5xl tracking-[-.06em]">{plan.price}<span className="ml-1 text-base tracking-normal">€/месяц</span></p><ul className="mt-10 space-y-3">{plan.items.map(item=><li key={item} className={`flex gap-3 text-sm leading-5 ${plan.featured?"text-neutral-700":"text-white/70"}`}><Check className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.6}/>{item}</li>)}</ul><a href="#contact" className={`btn mt-auto ${plan.featured?"btn-dark":"border border-white/30 text-white"}`}>Выбрать тариф <ArrowDownRight size={16}/></a></article>)}</div></div></section>
+  <section id="plans" className="bg-[#171717] py-28 text-white sm:py-40"><div className="shell"><div className="flex flex-col justify-between gap-7 sm:flex-row"><div><p className="eyebrow text-white/50">Тарифы</p><h2 className="display mt-5 text-5xl font-semibold sm:text-7xl">Выберите формат<br/>работы.</h2></div><p className="max-w-xs self-end text-sm leading-6 text-white/55">Все тарифы включают персональный подход. Можно начать с формата, который комфортен сейчас.</p></div><div className="mt-16 grid gap-4 lg:grid-cols-3">{plans.map(plan=><article key={plan.name} className={`relative flex min-h-[500px] flex-col rounded-2xl border p-7 sm:p-9 ${plan.featured?"border-white bg-white text-[#171717]":"border-white/15 bg-white/[.045]"}`}>{plan.featured&&<span className="absolute right-6 top-6 rounded-full bg-[#171717] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">Самый популярный</span>}<h3 className="text-xl">{plan.name}</h3><p className={`mt-3 text-sm leading-6 ${plan.featured?"text-neutral-500":"text-white/50"}`}>{plan.intro}</p><p className="mt-10 text-5xl tracking-[-.06em]">{plan.price}<span className="ml-1 text-base tracking-normal">€/месяц</span></p><ul className="mt-10 space-y-3">{plan.items.map(item=><li key={item} className={`flex gap-3 text-sm leading-5 ${plan.featured?"text-neutral-700":"text-white/70"}`}><Check className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.6}/>{item}</li>)}</ul><button type="button" onClick={() => setSelectedPlan(plan.name)} className={`btn mt-auto ${plan.featured?"btn-dark":"border border-white/30 text-white"}`}>Выбрать тариф <ArrowDownRight size={16}/></button></article>)}</div></div></section>
 
   <section className="shell py-28 sm:py-40"><div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr]"><div><p className="eyebrow">FAQ</p><h2 className="display mt-5 text-5xl font-semibold sm:text-7xl">Частые<br/>вопросы.</h2></div><div className="border-t border-neutral-200">{faqs.map(([q,a],i)=><div className="border-b border-neutral-200" key={q}><button onClick={()=>setOpen(open===i?null:i)} className="flex w-full items-center justify-between gap-6 py-6 text-left text-lg tracking-[-.025em] sm:text-xl"><span>{q}</span><ChevronDown className={`h-5 w-5 shrink-0 transition-transform ${open===i?"rotate-180":""}`}/></button><AnimatePresence>{open===i&&<motion.div initial={{height:0,opacity:0}} animate={{height:"auto",opacity:1}} exit={{height:0,opacity:0}} className="overflow-hidden"><p className="max-w-xl pb-6 text-sm leading-7 text-neutral-500">{a}</p></motion.div>}</AnimatePresence></div>)}</div></div></section>
 
   <section id="contact" className="relative min-h-[680px] overflow-hidden bg-black text-white"><Image src={images.contact} alt="Константин Ефремов в зале" fill sizes="100vw" className="object-cover object-[52%_31%] opacity-55 sm:object-[52%_36%]"/><div className="absolute inset-0 bg-black/50"/><div className="shell relative z-10 flex min-h-[680px] flex-col justify-between py-10 sm:py-14"><div className="flex items-center justify-between"><span className="font-bold tracking-[-.06em]">KE Fitness</span><span className="text-xs text-white/60">Онлайн · весь мир</span></div><div><p className="eyebrow text-white/65">Следующий шаг</p><h2 className="display mt-5 max-w-3xl text-6xl font-semibold sm:text-8xl">Готовы<br/>начать?</h2><p className="mt-7 max-w-md leading-7 text-white/75">Напишите в удобный мессенджер. На первой консультации разберём вашу цель, условия и подходящий формат работы.</p><div className="mt-9 flex flex-wrap gap-3"><a className="btn btn-light" href="https://telegram.me/efremovtrainer">Telegram <ArrowUpRight size={16}/></a><a className="btn border border-white/35 bg-white/10 text-white" href="https://instagram.com/efremovtrainer" target="_blank">Instagram <ArrowUpRight size={16}/></a><a className="btn border border-white/35 bg-white/10 text-white" href="mailto:efrem77.7735@gmail.com">Email <ArrowUpRight size={16}/></a></div></div><footer className="flex flex-col justify-between gap-4 border-t border-white/20 pt-5 text-xs text-white/60 sm:flex-row"><span>© {new Date().getFullYear()} KE Fitness</span></footer></div></section>
+  {selectedPlan && <ApplicationForm plan={selectedPlan} onClose={() => setSelectedPlan(null)}/>}
  </main>;
 }
