@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import ClientResults from "../components/ClientResults";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowDownRight, ArrowUpRight, Check, ChevronDown, Dumbbell, MessageCircle, Play, Salad, ScanLine, Sparkles, TrendingUp, X } from "lucide-react";
 import { useState, type FormEvent } from "react";
@@ -78,6 +79,8 @@ export default function Home() {
   <section className="shell py-28 sm:py-40"><div className="grid gap-12 lg:grid-cols-[.75fr_1.25fr]"><div><p className="eyebrow">Подход</p><h2 className="display mt-5 text-5xl font-semibold sm:text-7xl">План, который<br/>работает в жизни.</h2></div><p className="max-w-xl self-end text-lg leading-8 text-neutral-600">Без универсальных схем. Мы берём за основу вашу цель, реальный ритм жизни и стартовую точку — затем спокойно и последовательно выстраиваем результат.</p></div>
    <div className="grid-line mt-20 grid border-t border-neutral-200 sm:grid-cols-2 lg:grid-cols-3">{benefits.map(([Icon,title,text],i)=><motion.article key={title as string} initial="hidden" whileInView="show" viewport={{once:true,amount:.2}} variants={rise} transition={{delay:i*.06,duration:.55}} className="min-h-64 border-b border-neutral-200 px-0 py-8 sm:px-7 sm:py-10 lg:px-9"><Icon strokeWidth={1.4} className="h-6 w-6"/><h3 className="mt-14 text-xl font-medium tracking-[-.03em]">{title}</h3><p className="mt-3 max-w-xs text-sm leading-6 text-neutral-500">{text}</p></motion.article>)}</div>
   </section>
+
+  <ClientResults/>
 
   <section id="about" className="bg-[#f5f5f3] py-20 sm:py-28"><div className="shell grid items-center gap-12 lg:grid-cols-2 lg:gap-20"><div className="relative aspect-[4/5] overflow-hidden bg-neutral-200"><Image src={images.about} alt="Константин Ефремов у тренировочной стойки" fill sizes="(max-width: 1024px) 100vw, 50vw" className="object-cover object-[52%_38%]"/></div><div><p className="eyebrow">Обо мне</p><h2 className="display mt-5 text-5xl font-semibold sm:text-7xl">Константин<br/>Ефремов</h2><p className="mt-5 text-lg font-medium">Персональный тренер.</p><p className="mt-9 max-w-lg text-base leading-8 text-neutral-600">Я помогаю людям похудеть, набрать мышечную массу, стать сильнее и улучшить качество жизни благодаря индивидуальному подходу, грамотным тренировкам и постоянному сопровождению.</p><a href="#contact" className="mt-10 inline-flex items-center gap-2 border-b border-black pb-1 text-sm font-semibold">Обсудить вашу цель <ArrowUpRight size={16}/></a></div></div></section>
 
