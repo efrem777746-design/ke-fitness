@@ -10,6 +10,15 @@ import { useRef, useState, type FormEvent } from "react";
 import type { LucideIcon } from "lucide-react";
 
 const images = { hero: "/images/hero.png", about: "/images/about.png", contact: "/images/contact.png" };
+const stockholmTraining = "Персональные тренировки в Стокгольме";
+const stockholmServices = [
+ "Индивидуальные тренировки в тренажёрном зале, дома и на улице.",
+ "Снижение веса и набор мышечной массы.",
+ "Обучение правильной технике упражнений.",
+ "Индивидуальный подход.",
+ "Тренировки на русском языке.",
+];
+
 const benefits: [LucideIcon, string, string][] = [
   [Dumbbell,"Индивидуальная программа","Тренировки выстраиваются вокруг вашей цели, графика и доступного оборудования."],
   [Salad,"Рекомендации по питанию","Понятная система питания без крайностей и временных решений."],
@@ -27,6 +36,8 @@ const faqs = [["Можно ли заниматься дома?","Да. Прог�
 const rise = { hidden:{opacity:0,y:22}, show:{opacity:1,y:0} };
 
 function ApplicationForm({ plan, onClose }: { plan: string; onClose: () => void }) {
+ const isStockholm = plan === stockholmTraining;
+ const formTitle = isStockholm ? "Записаться на тренировку" : "Начать сопровождение";
  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
  const [error, setError] = useState("");
  const submitting = useRef(false);
@@ -60,11 +71,11 @@ function ApplicationForm({ plan, onClose }: { plan: string; onClose: () => void 
   if (typeof leadId === "string") trackAcceptedLead(leadId);
  }
 
- return <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 px-5 py-6" role="dialog" aria-modal="true" aria-label="Заявка на сопровождение">
-  <div className="relative w-full max-w-md bg-white p-7 text-[#171717] shadow-2xl sm:p-9">
+ return <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 px-5 py-6" role="dialog" aria-modal="true" aria-label={isStockholm ? "Заявка на персональную тренировку" : "Заявка на сопровождение"}>
+  <div className="relative max-h-full w-full max-w-md overflow-y-auto bg-white p-7 text-[#171717] shadow-2xl sm:p-9">
    <button type="button" onClick={onClose} className="absolute right-5 top-5 p-1 text-neutral-500 transition-colors hover:text-black" aria-label="Закрыть форму"><X size={20}/></button>
    {status === "success" ? <div className="py-10 pr-8"><p className="eyebrow">Заявка отправлена</p><p className="mt-5 text-2xl font-medium leading-8 tracking-[-.04em]">Спасибо! Я свяжусь с вами в течение 24 часов.</p><button type="button" onClick={onClose} className="btn btn-dark mt-9">Закрыть</button></div> : <>
-    <p className="eyebrow">Заявка · {plan}</p><h2 className="mt-4 text-3xl font-medium tracking-[-.05em]">Начать сопровождение</h2><p className="mt-3 text-sm leading-6 text-neutral-500">Оставьте контакты — я уточню детали и предложу следующий шаг.</p>
+    <p className="eyebrow pr-6">Заявка · {plan}</p><h2 className="mt-4 text-3xl font-medium tracking-[-.05em]">{formTitle}</h2><p className="mt-3 text-sm leading-6 text-neutral-500">Оставьте контакты — я уточню детали и предложу следующий шаг.</p>
     <form onSubmit={submitApplication} className="mt-8 space-y-5">
      <label className="block text-sm font-medium">Имя<input required name="name" autoComplete="name" className="mt-2 w-full border-b border-neutral-300 bg-transparent px-0 py-3 outline-none transition-colors focus:border-black" /></label>
      <label className="block text-sm font-medium">E-mail<input required name="email" type="email" autoComplete="email" className="mt-2 w-full border-b border-neutral-300 bg-transparent px-0 py-3 outline-none transition-colors focus:border-black" /></label>
@@ -94,9 +105,38 @@ export default function Home() {
     <motion.p variants={rise} transition={{duration:.7}} className="eyebrow text-white/70">Персональное онлайн-сопровождение</motion.p>
     <motion.h1 variants={rise} transition={{duration:.75}} className="display mt-6 text-[clamp(64px,12vw,158px)] font-semibold">Train Smart.<br/>Get Results.</motion.h1>
     <motion.p variants={rise} transition={{duration:.75}} className="mt-8 max-w-xl text-base leading-7 text-white/80 sm:text-lg">Индивидуальные программы тренировок и питания с постоянной поддержкой — независимо от страны проживания.</motion.p>
+    <motion.a
+     variants={rise}
+     transition={{ duration: .75 }}
+     href="#stockholm"
+     className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-semibold underline underline-offset-4 sm:text-base"
+    >
+     {stockholmTraining} <ArrowDownRight size={17} className="shrink-0" aria-hidden="true" />
+    </motion.a>
     <motion.div variants={rise} transition={{duration:.75}} className="mt-9 flex flex-col gap-3 sm:flex-row"><a className="btn btn-light" href="#contact">Начать сопровождение <ArrowDownRight size={17}/></a><a className="btn border border-white/35 bg-white/10 text-white backdrop-blur-sm" href="#plans">Посмотреть тарифы</a></motion.div>
    </motion.div>
    <div className="absolute bottom-7 left-1/2 z-10 -translate-x-1/2 text-[10px] tracking-[.18em] text-white/60">SCROLL TO EXPLORE</div>
+  </section>
+
+  <section id="stockholm" aria-labelledby="stockholm-title" className="border-b border-neutral-200 bg-[#f5f5f3] py-20 sm:py-28">
+   <div className="shell grid items-center gap-10 lg:grid-cols-2 lg:gap-20">
+    <div>
+     <h2 id="stockholm-title" className="display text-4xl font-semibold sm:text-6xl">
+      {stockholmTraining}
+     </h2>
+     <button type="button" className="btn btn-dark mt-8" onClick={() => setSelectedPlan(stockholmTraining)}>
+      Записаться на тренировку <ArrowUpRight size={16} aria-hidden="true" />
+     </button>
+    </div>
+    <ul className="divide-y divide-neutral-200 border-y border-neutral-200">
+     {stockholmServices.map((service) => (
+      <li key={service} className="flex items-start gap-3 py-4 text-base leading-6 text-neutral-700">
+       <Check size={17} strokeWidth={1.6} className="mt-1 shrink-0" aria-hidden="true" />
+       {service}
+      </li>
+     ))}
+    </ul>
+   </div>
   </section>
 
   <section className="shell py-28 sm:py-40"><div className="grid gap-12 lg:grid-cols-[.75fr_1.25fr]"><div><p className="eyebrow">Подход</p><h2 className="display mt-5 text-5xl font-semibold sm:text-7xl">План, который<br/>работает в жизни.</h2></div><p className="max-w-xl self-end text-lg leading-8 text-neutral-600">Без универсальных схем. Мы берём за основу вашу цель, реальный ритм жизни и стартовую точку — затем спокойно и последовательно выстраиваем результат.</p></div>
