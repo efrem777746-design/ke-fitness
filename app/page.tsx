@@ -2,9 +2,11 @@
 
 import Image from "next/image";
 import ClientResults from "../components/ClientResults";
+import CookiePreferences from "../components/CookiePreferences";
+import { trackAcceptedLead, trackContactClick } from "../lib/ads-measurement";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowDownRight, ArrowUpRight, Check, ChevronDown, Dumbbell, MessageCircle, Play, Salad, ScanLine, Sparkles, TrendingUp, X } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import type { LucideIcon } from "lucide-react";
 
 const images = { hero: "/images/hero.png", about: "/images/about.png", contact: "/images/contact.png" };
@@ -27,17 +29,35 @@ const rise = { hidden:{opacity:0,y:22}, show:{opacity:1,y:0} };
 function ApplicationForm({ plan, onClose }: { plan: string; onClose: () => void }) {
  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
  const [error, setError] = useState("");
+ const submitting = useRef(false);
 
  async function submitApplication(event: FormEvent<HTMLFormElement>) {
   event.preventDefault();
+  if (submitting.current) return;
+  submitting.current = true;
   setStatus("sending");
   setError("");
   const form = new FormData(event.currentTarget);
-  const response = await fetch("/api/lead", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.fromEntries(form.entries())) });
-  if (response.ok) { setStatus("success"); return; }
-  const result = await response.json().catch(() => null);
-  setError(result?.error ?? "Не удалось отправить заявку. Попробуйте ещё раз.");
-  setStatus("error");
+  const fallbackError = "Не удалось отправить заявку. Попробуйте ещё раз.";
+  let leadId: unknown;
+  try {
+   const response = await fetch("/api/lead", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.fromEntries(form.entries())) });
+   const result: { ok?: boolean; leadId?: string; error?: string } | null = await response.json().catch(() => null);
+   if (!response.ok || result?.ok !== true) {
+    setError(typeof result?.error === "string" ? result.error : fallbackError);
+    setStatus("error");
+    submitting.current = false;
+    return;
+   }
+   leadId = result.leadId;
+  } catch {
+   submitting.current = false;
+   setError(fallbackError);
+   setStatus("error");
+   return;
+  }
+  setStatus("success");
+  if (typeof leadId === "string") trackAcceptedLead(leadId);
  }
 
  return <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 px-5 py-6" role="dialog" aria-modal="true" aria-label="Заявка на сопровождение">
@@ -62,7 +82,10 @@ function ApplicationForm({ plan, onClose }: { plan: string; onClose: () => void 
 export default function Home() {
  const [open,setOpen]=useState<number|null>(0);
  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
- return <main>
+ return <main
+  onClickCapture={(event) => trackContactClick(event.target)}
+  onAuxClickCapture={(event) => { if (event.button === 1) trackContactClick(event.target); }}
+ >
   <section className="relative min-h-screen overflow-hidden bg-neutral-900 text-white">
    <Image src={images.hero} alt="Константин Ефремов в тренировочном зале" fill priority sizes="100vw" className="object-cover object-[52%_58%] opacity-80 sm:object-[52%_52%]" />
    <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/15 to-black/65" />
@@ -90,7 +113,7 @@ export default function Home() {
 
   <section className="shell py-28 sm:py-40"><div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr]"><div><p className="eyebrow">FAQ</p><h2 className="display mt-5 text-5xl font-semibold sm:text-7xl">Частые<br/>вопросы.</h2></div><div className="border-t border-neutral-200">{faqs.map(([q,a],i)=><div className="border-b border-neutral-200" key={q}><button onClick={()=>setOpen(open===i?null:i)} className="flex w-full items-center justify-between gap-6 py-6 text-left text-lg tracking-[-.025em] sm:text-xl"><span>{q}</span><ChevronDown className={`h-5 w-5 shrink-0 transition-transform ${open===i?"rotate-180":""}`}/></button><AnimatePresence>{open===i&&<motion.div initial={{height:0,opacity:0}} animate={{height:"auto",opacity:1}} exit={{height:0,opacity:0}} className="overflow-hidden"><p className="max-w-xl pb-6 text-sm leading-7 text-neutral-500">{a}</p></motion.div>}</AnimatePresence></div>)}</div></div></section>
 
-  <section id="contact" className="relative min-h-[680px] overflow-hidden bg-black text-white"><Image src={images.contact} alt="Константин Ефремов в зале" fill sizes="100vw" className="object-cover object-[52%_31%] opacity-55 sm:object-[52%_36%]"/><div className="absolute inset-0 bg-black/50"/><div className="shell relative z-10 flex min-h-[680px] flex-col justify-between py-10 sm:py-14"><div className="flex items-center justify-between"><span className="font-bold tracking-[-.06em]">KE Fitness</span><span className="text-xs text-white/60">Онлайн · весь мир</span></div><div><p className="eyebrow text-white/65">Следующий шаг</p><h2 className="display mt-5 max-w-3xl text-6xl font-semibold sm:text-8xl">Готовы<br/>начать?</h2><p className="mt-7 max-w-md leading-7 text-white/75">Напишите в удобный мессенджер. На первой консультации разберём вашу цель, условия и подходящий формат работы.</p><div className="mt-9 flex flex-wrap gap-3"><a className="btn btn-light" href="https://t.me/efremovtrainer" target="_blank">Telegram <ArrowUpRight size={16}/></a><a className="btn border border-white/35 bg-white/10 text-white" href="https://instagram.com/efremovtrainer" target="_blank">Instagram <ArrowUpRight size={16}/></a><a className="btn border border-white/35 bg-white/10 text-white" href="mailto:efrem77.7735@gmail.com">Email <ArrowUpRight size={16}/></a></div></div><footer className="flex flex-col justify-between gap-4 border-t border-white/20 pt-5 text-xs text-white/60 sm:flex-row"><span>© {new Date().getFullYear()} KE Fitness</span></footer></div></section>
+  <section id="contact" className="relative min-h-[680px] overflow-hidden bg-black text-white"><Image src={images.contact} alt="Константин Ефремов в зале" fill sizes="100vw" className="object-cover object-[52%_31%] opacity-55 sm:object-[52%_36%]"/><div className="absolute inset-0 bg-black/50"/><div className="shell relative z-10 flex min-h-[680px] flex-col justify-between py-10 sm:py-14"><div className="flex items-center justify-between"><span className="font-bold tracking-[-.06em]">KE Fitness</span><span className="text-xs text-white/60">Онлайн · весь мир</span></div><div><p className="eyebrow text-white/65">Следующий шаг</p><h2 className="display mt-5 max-w-3xl text-6xl font-semibold sm:text-8xl">Готовы<br/>начать?</h2><p className="mt-7 max-w-md leading-7 text-white/75">Напишите в удобный мессенджер. На первой консультации разберём вашу цель, условия и подходящий формат работы.</p><div className="mt-9 flex flex-wrap gap-3"><a className="btn btn-light" href="https://t.me/efremovtrainer" target="_blank">Telegram <ArrowUpRight size={16}/></a><a className="btn border border-white/35 bg-white/10 text-white" href="https://instagram.com/efremovtrainer" target="_blank">Instagram <ArrowUpRight size={16}/></a><a className="btn border border-white/35 bg-white/10 text-white" href="mailto:efrem77.7735@gmail.com">Email <ArrowUpRight size={16}/></a></div></div><footer className="flex flex-col justify-between gap-4 border-t border-white/20 pt-5 text-xs text-white/60 sm:flex-row"><span>© {new Date().getFullYear()} KE Fitness</span><CookiePreferences/></footer></div></section>
   {selectedPlan && <ApplicationForm plan={selectedPlan} onClose={() => setSelectedPlan(null)}/>}
  </main>;
 }

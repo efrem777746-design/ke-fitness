@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 
 type Lead = { name?: string; email?: string; messenger?: string; goal?: string; plan?: string };
@@ -24,5 +25,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Не удалось отправить заявку. Попробуйте ещё раз." }, { status: 502 });
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, leadId: randomUUID() });
 }
