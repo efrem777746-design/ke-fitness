@@ -31,6 +31,8 @@ export default function CookiePreferences() {
     if (returnFocus) settingsButton.current?.focus({ preventScroll: true });
   }
 
+  const choiceButton = "flex min-h-11 items-center justify-center rounded-full border border-neutral-300 bg-white px-2 py-2 text-center text-sm font-semibold leading-tight text-[#171717] hover:bg-neutral-100 sm:px-4";
+
   return (
     <>
       <button
@@ -54,16 +56,15 @@ export default function CookiePreferences() {
         id="cookie-preferences"
         aria-labelledby="cookie-preferences-title"
         hidden={!open}
-        className="fixed inset-x-4 bottom-4 z-40 mx-auto max-h-[75dvh] max-w-2xl overflow-y-auto rounded-xl border border-neutral-200 bg-white p-5 text-[#171717] shadow-lg sm:p-6"
+        className="fixed inset-x-3 bottom-3 z-40 mx-auto max-h-[75dvh] max-w-2xl overflow-y-auto rounded-xl border border-neutral-200 bg-white p-3.5 text-[#171717] shadow-lg sm:inset-x-4 sm:bottom-4 sm:p-6"
       >
-        <h2 ref={title} tabIndex={-1} id="cookie-preferences-title" className="text-lg font-semibold">
+        <h2 ref={title} tabIndex={-1} id="cookie-preferences-title" className="text-base font-semibold sm:text-lg">
           Настройки cookies
         </h2>
-        <p className="mt-2 text-sm leading-6 text-neutral-700">
-          С вашего согласия Google Ads использует cookies, чтобы определить, привела ли реклама к заявке.
-          Вы можете отказаться или изменить выбор в любой момент внизу страницы.
+        <p className="mt-1 text-sm leading-5 text-neutral-700 sm:mt-2 sm:leading-6">
+          С вашего согласия Google Ads измеряет заявки с рекламы с помощью cookies. Выбор можно изменить внизу страницы.
         </p>
-        <details className="mt-2 text-sm leading-6 text-neutral-700">
+        <details className="mt-1.5 text-sm leading-5 text-neutral-700 sm:mt-2 sm:leading-6">
           <summary className="w-fit cursor-pointer underline underline-offset-2">Подробнее о cookies</summary>
           <p className="mt-2">
             Ваш выбор хранится в браузере до 180 дней. После согласия Google Ads может использовать
@@ -76,9 +77,9 @@ export default function CookiePreferences() {
             </a>.
           </p>
         </details>
-        <div className="mt-4 grid gap-2 sm:grid-cols-2">
-          <button type="button" className="btn btn-light" onClick={() => choose("denied")}>Отказаться</button>
-          <button type="button" className="btn btn-light" onClick={() => choose("allowed")}>Разрешить измерение</button>
+        <div className="mt-3 grid grid-cols-2 gap-2 sm:mt-4">
+          <button type="button" className={choiceButton} onClick={() => choose("denied")}>Отказаться</button>
+          <button type="button" className={choiceButton} onClick={() => choose("allowed")}>Разрешить измерение</button>
         </div>
       </section>
     </>

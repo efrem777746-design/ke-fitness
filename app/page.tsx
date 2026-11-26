@@ -9,7 +9,7 @@ import { ArrowDownRight, ArrowUpRight, Check, ChevronDown, Dumbbell, MessageCirc
 import { useRef, useState, type FormEvent } from "react";
 import type { LucideIcon } from "lucide-react";
 
-const images = { hero: "/images/hero.png", about: "/images/about.png", contact: "/images/contact.png" };
+const images = { hero: "/images/hero.png", about: "/images/about-stainless.png", contact: "/images/contact.png" };
 const stockholmTraining = "Персональные тренировки в Стокгольме";
 const stockholmServices = [
  "Индивидуальные тренировки в тренажёрном зале, дома и на улице.",
@@ -97,25 +97,40 @@ export default function Home() {
   onClickCapture={(event) => trackContactClick(event.target)}
   onAuxClickCapture={(event) => { if (event.button === 1) trackContactClick(event.target); }}
  >
-  <section className="relative min-h-screen overflow-hidden bg-neutral-900 text-white">
-   <Image src={images.hero} alt="Константин Ефремов в тренировочном зале" fill priority sizes="100vw" className="object-cover object-[52%_58%] opacity-80 sm:object-[52%_52%]" />
-   <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/15 to-black/65" />
-   <nav className="shell relative z-10 flex items-center justify-between py-7"><a href="#top" className="text-lg font-bold tracking-[-.06em]">KE<span className="font-normal"> Fitness</span></a><a href="#contact" className="hidden text-sm text-white/80 sm:block">Связаться <ArrowUpRight className="inline h-4 w-4"/></a></nav>
-   <motion.div initial="hidden" animate="show" transition={{staggerChildren:.12}} className="shell relative z-10 flex min-h-[calc(100vh-86px)] max-w-5xl flex-col items-center justify-center pb-20 text-center">
-    <motion.p variants={rise} transition={{duration:.7}} className="eyebrow text-white/70">Персональное онлайн-сопровождение</motion.p>
-    <motion.h1 variants={rise} transition={{duration:.75}} className="display mt-6 text-[clamp(64px,12vw,158px)] font-semibold">Train Smart.<br/>Get Results.</motion.h1>
-    <motion.p variants={rise} transition={{duration:.75}} className="mt-8 max-w-xl text-base leading-7 text-white/80 sm:text-lg">Индивидуальные программы тренировок и питания с постоянной поддержкой — независимо от страны проживания.</motion.p>
-    <motion.a
-     variants={rise}
-     transition={{ duration: .75 }}
-     href="#stockholm"
-     className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-semibold underline underline-offset-4 sm:text-base"
-    >
-     {stockholmTraining} <ArrowDownRight size={17} className="shrink-0" aria-hidden="true" />
-    </motion.a>
-    <motion.div variants={rise} transition={{duration:.75}} className="mt-9 flex flex-col gap-3 sm:flex-row"><a className="btn btn-light" href="#contact">Начать сопровождение <ArrowDownRight size={17}/></a><a className="btn border border-white/35 bg-white/10 text-white backdrop-blur-sm" href="#plans">Посмотреть тарифы</a></motion.div>
-   </motion.div>
-   <div className="absolute bottom-7 left-1/2 z-10 -translate-x-1/2 text-[10px] tracking-[.18em] text-white/60">SCROLL TO EXPLORE</div>
+  <section className="bg-[#121212] text-white">
+   <nav className="shell">
+    <div className="flex items-center justify-between border-b border-white/15 py-4 sm:py-6">
+     <a href="#top" className="text-lg font-bold tracking-[-.06em]">KE<span className="font-normal"> Fitness</span></a>
+     <a href="#contact" className="hidden text-sm text-white/80 sm:block">Связаться <ArrowUpRight className="inline h-4 w-4"/></a>
+    </div>
+   </nav>
+   <div className="shell">
+    <div className="grid items-center gap-6 py-7 md:grid-cols-[1.08fr_1fr] md:gap-9 md:py-10 lg:gap-14">
+     <motion.div initial="hidden" animate="show" transition={{ staggerChildren: .1 }} className="min-w-0">
+      <motion.p variants={rise} transition={{ duration: .65 }} className="eyebrow text-white/70">
+       Константин Ефремов · Персональный тренер
+      </motion.p>
+      <motion.h1 variants={rise} transition={{ duration: .7 }} className="display mt-4 text-[clamp(2.75rem,8vw,4.25rem)] font-semibold sm:mt-5 md:text-[clamp(3.125rem,7.2vw,7rem)]">
+       Train Smart.<br/>Get Results.
+      </motion.h1>
+      <motion.p variants={rise} transition={{ duration: .7 }} className="mt-5 max-w-md text-base leading-7 text-white/80 md:mt-7 md:text-lg">
+       Индивидуальные программы тренировок и питания с постоянной поддержкой — независимо от страны проживания.
+      </motion.p>
+      <motion.div variants={rise} transition={{ duration: .7 }} className="mt-6 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-3 md:mt-8">
+       <a className="btn btn-light !px-4" href="#contact">начать онлайн сопровождение <ArrowDownRight size={17} className="shrink-0" aria-hidden="true" /></a>
+       <a className="btn !px-3 border border-white/45 text-center leading-tight hover:bg-white/10" href="#stockholm">
+        {stockholmTraining} <ArrowDownRight size={17} className="shrink-0" aria-hidden="true" />
+       </a>
+      </motion.div>
+      <motion.a variants={rise} transition={{ duration: .7 }} className="mt-2 inline-flex min-h-11 items-center text-sm text-white/75 underline underline-offset-4 hover:text-white md:mt-3" href="#plans">
+       Посмотреть тарифы
+      </motion.a>
+     </motion.div>
+     <div className="relative h-[clamp(13.5rem,65vw,23rem)] overflow-hidden rounded-2xl bg-neutral-900 md:h-[clamp(26rem,58vw,37rem)] lg:h-[min(74svh,41rem)]">
+      <Image src={images.hero} alt="Константин Ефремов в тренировочном зале" fill priority sizes="(min-width: 1280px) 540px, (min-width: 768px) 45vw, calc(100vw - 40px)" className="object-cover object-[50%_66%] md:object-[50%_61%]" />
+     </div>
+    </div>
+   </div>
   </section>
 
   <section id="stockholm" aria-labelledby="stockholm-title" className="border-b border-neutral-200 bg-[#f5f5f3] py-20 sm:py-28">
@@ -149,7 +164,7 @@ export default function Home() {
 
   <section className="shell py-28 sm:py-40"><div className="max-w-3xl"><p className="eyebrow">Процесс</p><h2 className="display mt-5 text-5xl font-semibold sm:text-7xl">Чёткий путь<br/>без лишнего.</h2></div><div className="mt-20 border-t border-neutral-200">{["Консультация","Анкета","Фото и замеры","Индивидуальная программа","Еженедельный контроль","Достижение результата"].map((step,i)=><motion.div initial={{opacity:0,x:-16}} whileInView={{opacity:1,x:0}} viewport={{once:true}} transition={{delay:i*.05}} className="group flex items-center justify-between border-b border-neutral-200 py-6 sm:py-8" key={step}><span className="w-14 text-xs text-neutral-400">0{i+1}</span><h3 className="mr-auto text-xl tracking-[-.03em] sm:text-3xl">{step}</h3><ArrowDownRight className="h-5 w-5 transition-transform group-hover:translate-x-1 group-hover:translate-y-1" strokeWidth={1.3}/></motion.div>)}</div></section>
 
-  <section id="plans" className="bg-[#171717] py-28 text-white sm:py-40"><div className="shell"><div className="flex flex-col justify-between gap-7 sm:flex-row"><div><p className="eyebrow text-white/50">Тарифы</p><h2 className="display mt-5 text-5xl font-semibold sm:text-7xl">Выберите формат<br/>работы.</h2></div><p className="max-w-xs self-end text-sm leading-6 text-white/55">Все тарифы включают персональный подход. Можно начать с формата, который комфортен сейчас.</p></div><div className="mt-16 grid gap-4 lg:grid-cols-3">{plans.map(plan=><article key={plan.name} className={`relative flex min-h-[500px] flex-col rounded-2xl border p-7 sm:p-9 ${plan.featured?"border-white bg-white text-[#171717]":"border-white/15 bg-white/[.045]"}`}>{plan.featured&&<span className="absolute right-6 top-6 rounded-full bg-[#171717] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">Самый популярный</span>}<h3 className="text-xl">{plan.name}</h3><p className={`mt-3 text-sm leading-6 ${plan.featured?"text-neutral-500":"text-white/50"}`}>{plan.intro}</p><p className="mt-10 text-5xl tracking-[-.06em]">{plan.price}<span className="ml-1 text-base tracking-normal">€/месяц</span></p><ul className="mt-10 space-y-3">{plan.items.map(item=><li key={item} className={`flex gap-3 text-sm leading-5 ${plan.featured?"text-neutral-700":"text-white/70"}`}><Check className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.6}/>{item}</li>)}</ul><button type="button" onClick={() => setSelectedPlan(plan.name)} className={`btn mt-auto ${plan.featured?"btn-dark":"border border-white/30 text-white"}`}>Выбрать тариф <ArrowDownRight size={16}/></button></article>)}</div></div></section>
+  <section id="plans" className="bg-[#171717] py-28 text-white sm:py-40"><div className="shell"><div className="flex flex-col justify-between gap-7 sm:flex-row"><div><p className="eyebrow text-white/50">Онлайн-сопровождение</p><h2 className="display mt-5 text-5xl font-semibold sm:text-7xl">Выберите формат<br/>работы.</h2></div><p className="max-w-xs self-end text-sm leading-6 text-white/55">Все тарифы включают персональный подход. Можно начать с формата, который комфортен сейчас.</p></div><div className="mt-16 grid gap-4 lg:grid-cols-3">{plans.map(plan=><article key={plan.name} className={`relative flex min-h-[500px] flex-col rounded-2xl border p-7 sm:p-9 ${plan.featured?"border-white bg-white text-[#171717]":"border-white/15 bg-white/[.045]"}`}>{plan.featured&&<span className="absolute right-6 top-6 rounded-full bg-[#171717] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">Самый популярный</span>}<h3 className="text-xl">{plan.name}</h3><p className={`mt-3 text-sm leading-6 ${plan.featured?"text-neutral-500":"text-white/50"}`}>{plan.intro}</p><p className="mt-10 text-5xl tracking-[-.06em]">{plan.price}<span className="ml-1 text-base tracking-normal">€/месяц</span></p><ul className="mt-10 space-y-3">{plan.items.map(item=><li key={item} className={`flex gap-3 text-sm leading-5 ${plan.featured?"text-neutral-700":"text-white/70"}`}><Check className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.6}/>{item}</li>)}</ul><button type="button" onClick={() => setSelectedPlan(plan.name)} className={`btn mt-auto ${plan.featured?"btn-dark":"border border-white/30 text-white"}`}>Выбрать тариф <ArrowDownRight size={16}/></button></article>)}</div></div></section>
 
   <section className="shell py-28 sm:py-40"><div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr]"><div><p className="eyebrow">FAQ</p><h2 className="display mt-5 text-5xl font-semibold sm:text-7xl">Частые<br/>вопросы.</h2></div><div className="border-t border-neutral-200">{faqs.map(([q,a],i)=><div className="border-b border-neutral-200" key={q}><button onClick={()=>setOpen(open===i?null:i)} className="flex w-full items-center justify-between gap-6 py-6 text-left text-lg tracking-[-.025em] sm:text-xl"><span>{q}</span><ChevronDown className={`h-5 w-5 shrink-0 transition-transform ${open===i?"rotate-180":""}`}/></button><AnimatePresence>{open===i&&<motion.div initial={{height:0,opacity:0}} animate={{height:"auto",opacity:1}} exit={{height:0,opacity:0}} className="overflow-hidden"><p className="max-w-xl pb-6 text-sm leading-7 text-neutral-500">{a}</p></motion.div>}</AnimatePresence></div>)}</div></div></section>
 
