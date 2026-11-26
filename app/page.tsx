@@ -117,13 +117,13 @@ export default function Home() {
        Индивидуальные программы тренировок и питания с постоянной поддержкой — независимо от страны проживания.
       </motion.p>
       <motion.div variants={rise} transition={{ duration: .7 }} className="mt-6 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-3 md:mt-8">
-       <a className="btn btn-light !px-4" href="#contact">начать онлайн сопровождение <ArrowDownRight size={17} className="shrink-0" aria-hidden="true" /></a>
+       <a className="btn btn-light !px-4" href="#contact">Начать онлайн сопровождение <ArrowDownRight size={17} className="shrink-0" aria-hidden="true" /></a>
        <a className="btn !px-3 border border-white/45 text-center leading-tight hover:bg-white/10" href="#stockholm">
         {stockholmTraining} <ArrowDownRight size={17} className="shrink-0" aria-hidden="true" />
        </a>
       </motion.div>
       <motion.a variants={rise} transition={{ duration: .7 }} className="mt-2 inline-flex min-h-11 items-center text-sm text-white/75 underline underline-offset-4 hover:text-white md:mt-3" href="#plans">
-       Посмотреть тарифы
+       Посмотреть тарифы онлайн-сопровождения
       </motion.a>
      </motion.div>
      <div className="relative h-[clamp(13.5rem,65vw,23rem)] overflow-hidden rounded-2xl bg-neutral-900 md:h-[clamp(26rem,58vw,37rem)] lg:h-[min(74svh,41rem)]">
@@ -164,7 +164,47 @@ export default function Home() {
 
   <section className="shell py-28 sm:py-40"><div className="max-w-3xl"><p className="eyebrow">Процесс</p><h2 className="display mt-5 text-5xl font-semibold sm:text-7xl">Чёткий путь<br/>без лишнего.</h2></div><div className="mt-20 border-t border-neutral-200">{["Консультация","Анкета","Фото и замеры","Индивидуальная программа","Еженедельный контроль","Достижение результата"].map((step,i)=><motion.div initial={{opacity:0,x:-16}} whileInView={{opacity:1,x:0}} viewport={{once:true}} transition={{delay:i*.05}} className="group flex items-center justify-between border-b border-neutral-200 py-6 sm:py-8" key={step}><span className="w-14 text-xs text-neutral-400">0{i+1}</span><h3 className="mr-auto text-xl tracking-[-.03em] sm:text-3xl">{step}</h3><ArrowDownRight className="h-5 w-5 transition-transform group-hover:translate-x-1 group-hover:translate-y-1" strokeWidth={1.3}/></motion.div>)}</div></section>
 
-  <section id="plans" className="bg-[#171717] py-28 text-white sm:py-40"><div className="shell"><div className="flex flex-col justify-between gap-7 sm:flex-row"><div><p className="eyebrow text-white/50">Онлайн-сопровождение</p><h2 className="display mt-5 text-5xl font-semibold sm:text-7xl">Выберите формат<br/>работы.</h2></div><p className="max-w-xs self-end text-sm leading-6 text-white/55">Все тарифы включают персональный подход. Можно начать с формата, который комфортен сейчас.</p></div><div className="mt-16 grid gap-4 lg:grid-cols-3">{plans.map(plan=><article key={plan.name} className={`relative flex min-h-[500px] flex-col rounded-2xl border p-7 sm:p-9 ${plan.featured?"border-white bg-white text-[#171717]":"border-white/15 bg-white/[.045]"}`}>{plan.featured&&<span className="absolute right-6 top-6 rounded-full bg-[#171717] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">Самый популярный</span>}<h3 className="text-xl">{plan.name}</h3><p className={`mt-3 text-sm leading-6 ${plan.featured?"text-neutral-500":"text-white/50"}`}>{plan.intro}</p><p className="mt-10 text-5xl tracking-[-.06em]">{plan.price}<span className="ml-1 text-base tracking-normal">€/месяц</span></p><ul className="mt-10 space-y-3">{plan.items.map(item=><li key={item} className={`flex gap-3 text-sm leading-5 ${plan.featured?"text-neutral-700":"text-white/70"}`}><Check className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.6}/>{item}</li>)}</ul><button type="button" onClick={() => setSelectedPlan(plan.name)} className={`btn mt-auto ${plan.featured?"btn-dark":"border border-white/30 text-white"}`}>Выбрать тариф <ArrowDownRight size={16}/></button></article>)}</div></div></section>
+  <section id="plans" className="bg-[#171717] py-28 text-white sm:py-40">
+   <div className="shell">
+    <div className="flex flex-col justify-between gap-7 sm:flex-row">
+     <div>
+      <p className="eyebrow text-white/50">Онлайн-сопровождение</p>
+      <h2 className="display mt-5 text-5xl font-semibold sm:text-7xl">Выберите формат<br/>работы.</h2>
+     </div>
+     <p className="max-w-xs self-end text-sm leading-6 text-white/55">Все тарифы включают персональный подход. Можно начать с формата, который комфортен сейчас.</p>
+    </div>
+    <div className="mt-16 grid gap-4 lg:grid-cols-3">
+     {plans.map((plan) => (
+      <article
+       key={plan.name}
+       className={`flex min-h-[500px] flex-col rounded-2xl border p-7 sm:p-9 lg:row-span-5 lg:grid lg:grid-rows-subgrid lg:gap-y-0 ${plan.featured ? "border-white bg-white text-[#171717]" : "border-white/15 bg-white/[.045]"}`}
+      >
+       <div className="flex flex-wrap items-center justify-between gap-2">
+        <h3 className="text-xl">{plan.name}</h3>
+        {plan.featured && <span className="rounded-full bg-[#171717] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">Самый популярный</span>}
+       </div>
+       <p className={`mt-3 text-sm leading-6 ${plan.featured ? "text-neutral-500" : "text-white/50"}`}>{plan.intro}</p>
+       <p className="mt-10 text-5xl tracking-[-.06em]">
+        {plan.price}<span className="ml-1 text-base tracking-normal">€/месяц</span>
+       </p>
+       <ul className="mt-10 space-y-3">
+        {plan.items.map((item) => (
+         <li key={item} className={`flex gap-3 text-sm leading-5 ${plan.featured ? "text-neutral-700" : "text-white/70"}`}>
+          <Check className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.6}/>
+          {item}
+         </li>
+        ))}
+       </ul>
+       <div className="mt-auto pt-6">
+        <button type="button" onClick={() => setSelectedPlan(plan.name)} className={`btn w-full ${plan.featured ? "btn-dark" : "border border-white/30 text-white"}`}>
+         Выбрать тариф <ArrowDownRight size={16}/>
+        </button>
+       </div>
+      </article>
+     ))}
+    </div>
+   </div>
+  </section>
 
   <section className="shell py-28 sm:py-40"><div className="grid gap-12 lg:grid-cols-[.8fr_1.2fr]"><div><p className="eyebrow">FAQ</p><h2 className="display mt-5 text-5xl font-semibold sm:text-7xl">Частые<br/>вопросы.</h2></div><div className="border-t border-neutral-200">{faqs.map(([q,a],i)=><div className="border-b border-neutral-200" key={q}><button onClick={()=>setOpen(open===i?null:i)} className="flex w-full items-center justify-between gap-6 py-6 text-left text-lg tracking-[-.025em] sm:text-xl"><span>{q}</span><ChevronDown className={`h-5 w-5 shrink-0 transition-transform ${open===i?"rotate-180":""}`}/></button><AnimatePresence>{open===i&&<motion.div initial={{height:0,opacity:0}} animate={{height:"auto",opacity:1}} exit={{height:0,opacity:0}} className="overflow-hidden"><p className="max-w-xl pb-6 text-sm leading-7 text-neutral-500">{a}</p></motion.div>}</AnimatePresence></div>)}</div></div></section>
 
