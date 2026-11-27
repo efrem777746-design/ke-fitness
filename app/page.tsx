@@ -28,9 +28,27 @@ const benefits: [LucideIcon, string, string][] = [
   [ScanLine,"Корректировка плана","Регулярно обновляю нагрузку и питание, когда меняются условия и результат."],
 ];
 const plans = [
-  { name:"Старт", price:"150", intro:"Для самостоятельного и понятного старта.", items:["Индивидуальная программа тренировок","Рекомендации по питанию","Контроль прогресса","Корректировка программы","Поддержка в мессенджере"] },
-  { name:"Стандарт", price:"250", intro:"Больше внимания к деталям и обратной связи.", featured:true, items:["Всё из тарифа «Старт»","Проверка техники упражнений","Разбор питания","Более частая обратная связь","Дополнительные корректировки"] },
-  { name:"Премиум", price:"400", intro:"Для тех, кому важен приоритет и максимальная вовлечённость.", items:["Всё из «Стандарт»","Приоритетная поддержка","Неограниченные консультации в рабочее время","Индивидуальная стратегия достижения цели"] },
+  {
+    name: "Старт",
+    price: "100",
+    period: "/ месяц",
+    audience: "Для тех, кто уже знаком с базовой техникой упражнений и хочет доступный по цене, системный план от тренера.",
+    items: ["Персональный план тренировок и питания", "Корректировка раз в две недели", "Ответы на вопросы в чате"],
+  },
+  {
+    name: "Полное сопровождение",
+    price: "150",
+    period: "/ месяц",
+    audience: "Для тех, кому нужны контроль, регулярная коррекция техники и поддержка без переплаты за очные занятия.",
+    featured: true,
+    items: ["Программа тренировок", "План питания", "Разбор техники по видео", "Еженедельные отчёты", "Постоянная связь в WhatsApp"],
+  },
+  {
+    name: "Пакет на 3 месяца",
+    price: "400",
+    period: "за 3 месяца",
+    items: ["Всё из тарифа «Полное сопровождение»", "Фиксация цены на весь квартал"],
+  },
 ];
 const faqs = [["Можно ли заниматься дома?","Да. Программа учитывает ваше оборудование: от тренировок с собственным весом до полноценного зала."],["Подходит ли сопровождение новичкам?","Да. Нагрузка и объяснения подстраиваются под ваш текущий опыт, поэтому начинать можно без подготовки."],["Нужно ли считать калории?","Не всегда. Мы выбираем формат, который помогает стабильно двигаться к цели и не перегружает повседневную жизнь."],["Как происходит общение?","Основная связь — в мессенджере. Вы отправляете отчёты и вопросы, а я даю обратную связь в согласованном формате."],["Как быстро я получу программу?","После консультации, анкеты, фото и замеров подготовка программы обычно занимает несколько рабочих дней."]];
 const rise = { hidden:{opacity:0,y:22}, show:{opacity:1,y:0} };
@@ -177,24 +195,27 @@ export default function Home() {
      {plans.map((plan) => (
       <article
        key={plan.name}
-       className={`flex min-h-[500px] flex-col rounded-2xl border p-7 sm:p-9 lg:row-span-5 lg:grid lg:grid-rows-subgrid lg:gap-y-0 ${plan.featured ? "border-white bg-white text-[#171717]" : "border-white/15 bg-white/[.045]"}`}
+       className={`flex min-h-[500px] flex-col rounded-2xl border p-7 sm:p-9 lg:row-span-4 lg:grid lg:grid-rows-subgrid lg:gap-y-0 ${plan.featured ? "border-white bg-white text-[#171717]" : "border-white/15 bg-white/[.045]"}`}
       >
        <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="text-xl">{plan.name}</h3>
         {plan.featured && <span className="rounded-full bg-[#171717] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white">Самый популярный</span>}
        </div>
-       <p className={`mt-3 text-sm leading-6 ${plan.featured ? "text-neutral-500" : "text-white/50"}`}>{plan.intro}</p>
-       <p className="mt-10 text-5xl tracking-[-.06em]">
-        {plan.price}<span className="ml-1 text-base tracking-normal">€/месяц</span>
+       <p className="mt-8 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+        <span className="whitespace-nowrap"><span className="text-5xl tracking-[-.06em]">{plan.price}</span> <span className="text-base font-medium">€</span></span>
+        <span className="text-sm">{plan.period}</span>
        </p>
-       <ul className="mt-10 space-y-3">
-        {plan.items.map((item) => (
-         <li key={item} className={`flex gap-3 text-sm leading-5 ${plan.featured ? "text-neutral-700" : "text-white/70"}`}>
-          <Check className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.6}/>
-          {item}
-         </li>
-        ))}
-       </ul>
+       <div className="mt-8">
+        <ul className="space-y-3">
+         {plan.items.map((item) => (
+          <li key={item} className={`flex gap-3 text-sm leading-5 ${plan.featured ? "text-neutral-700" : "text-white/70"}`}>
+           <Check className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.6}/>
+           {item}
+          </li>
+         ))}
+        </ul>
+        {plan.audience && <p className={`mt-6 border-t pt-4 text-sm leading-6 ${plan.featured ? "border-neutral-200 text-neutral-700" : "border-white/15 text-white/70"}`}>{plan.audience}</p>}
+       </div>
        <div className="mt-auto pt-6">
         <button type="button" onClick={() => setSelectedPlan(plan.name)} className={`btn w-full ${plan.featured ? "btn-dark" : "border border-white/30 text-white"}`}>
          Выбрать тариф <ArrowDownRight size={16}/>
